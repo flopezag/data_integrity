@@ -2,6 +2,13 @@
 name = "jsonld-signer"
 version = "0.1.0"
 edition = "2024"
+build = "build.rs"
+
+
+[build-dependencies]
+serde_yaml = "0.9"
+utoipa = "4"  # or match your project version
+
 
 [dependencies]
 serde = { version = "1.0.219", features = ["derive"] }
@@ -17,6 +24,7 @@ tower-http = { version = "0.6.6", features = ["trace"] }
 utoipa = "5.4.0"
 utoipa-swagger-ui = { version = "8.0.5", features = ["axum"] }
 serde_yaml = "0.9.34"
+
 
 [dev-dependencies]
 tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread"] }
