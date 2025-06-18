@@ -6,17 +6,17 @@ use rand::RngCore;
 use ed25519_dalek::{SigningKey, VerifyingKey, Signature, Signer, SecretKey};
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use chrono::Utc;
-use utoipa::ToSchema;
+//use utoipa::ToSchema;
 use crate::handlers::config::CONFIG_STORE;
 
 
-#[derive(Deserialize, ToSchema)]
+/*#[derive(Deserialize, ToSchema)]
 pub struct SignRequest {
     pub document: Value,
     #[serde(rename = "keysToSign")]
     pub keys_to_sign: Vec<String>,
 }
-
+*/
 #[derive(Serialize, Deserialize, Debug)]
 struct NgsildProof {
     #[serde(rename = "type")]

@@ -11,7 +11,6 @@ use crate::handlers::{version, sign, verify};
     components(
         schemas(
             version::ServiceInfo,
-            sign::SignRequest,
             verify::VerifyRequest,
             verify::VerifyResult,
             verify::VerificationStatus
