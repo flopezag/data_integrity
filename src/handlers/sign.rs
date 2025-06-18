@@ -6,8 +6,10 @@ use rand::RngCore;
 use ed25519_dalek::{SigningKey, VerifyingKey, Signature, Signer, SecretKey};
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use chrono::Utc;
+use utoipa::ToSchema;
 
-#[derive(Deserialize)]
+
+#[derive(Deserialize, ToSchema)]
 pub struct SignRequest {
     pub document: Value,
     #[serde(rename = "keysToSign")]
@@ -39,6 +41,12 @@ struct ProofContent {
     proof_value: String,
 }
 
+#[utoipa::path(
+    post,
+    path = "/sign",
+    request_body = SignRequest,
+    responses((status = 200, body = Value))
+)]
 pub async fn sign_handler(Json(request): Json<SignRequest>) -> Json<Value> {
     let mut doc = request.document;
     let keys_to_sign = request.keys_to_sign;
