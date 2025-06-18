@@ -2,9 +2,30 @@ use ed25519_dalek::{SigningKey, VerifyingKey, Signature, Signer, SecretKey};
 use rand::rngs::OsRng;
 use rand::RngCore;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{json, Value};
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use chrono::Utc;
+use axum::{
+    routing::{get, post},
+    Json, Router,
+};
+use tokio::net::TcpListener;
+use std::{net::SocketAddr, time::Instant};
+use once_cell::sync::Lazy;
+
+
+// Constants
+static START_TIME: Lazy<Instant> = Lazy::new(Instant::now);
+static GITHUB_REPO: &str = "https://github.com/your-user/your-repo";
+static VERSION: &str = "0.1.0";
+
+#[derive(Serialize)]
+struct ServiceInfo {
+    version: String,
+    repository: String,
+    uptime_seconds: u64,
+}
+
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Proof {
@@ -16,7 +37,30 @@ struct Proof {
     signatureValue: String,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
+    let app = Router::new()
+        .route("/", get(service_info))
+        .route("/sign", post(sign_handler));
+
+    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    println!("Listening on http://{}", addr);
+    let listener = TcpListener::bind(addr).await.unwrap();
+    axum::serve(listener, app)
+        .await
+        .unwrap();
+}
+
+async fn service_info() -> Json<ServiceInfo> {
+    Json(ServiceInfo {
+        version: VERSION.to_string(),
+        repository: GITHUB_REPO.to_string(),
+        uptime_seconds: START_TIME.elapsed().as_secs(),
+    })
+}
+
+
+async fn sign_handler(Json(_ngsilddoc): Json<Value>) -> Json<Value> {
     // Step 1: Create the NGSI-LD document
     let mut ngsilddoc = json!({
         "id": "urn:ngsi-ld:Store:002",
@@ -64,4 +108,6 @@ fn main() {
     // Step 7: Output
     println!("{}", serde_json::to_string_pretty(&ngsilddoc).unwrap());
     println!("\nPublic Key (base64): {}", STANDARD.encode(verifying_key.to_bytes()));
+    
+    Json(ngsilddoc)
 }
