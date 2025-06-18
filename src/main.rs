@@ -28,6 +28,7 @@ async fn main() {
     let app = Router::new()
         .route("/info", get(handlers::version::service_info))
         .route("/sign", post(handlers::sign::sign_handler))
+        .route("/config", post(handlers::config::config_handler))
         .route("/verify", post(handlers::verify::verify_handler));
         // .merge(swagger_router);
 

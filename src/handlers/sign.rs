@@ -1,4 +1,4 @@
-use axum::Json;
+use axum::{Json, http::StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use rand::rngs::OsRng;
@@ -7,6 +7,7 @@ use ed25519_dalek::{SigningKey, VerifyingKey, Signature, Signer, SecretKey};
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use chrono::Utc;
 use utoipa::ToSchema;
+use crate::handlers::config::CONFIG_STORE;
 
 
 #[derive(Deserialize, ToSchema)]
@@ -44,12 +45,32 @@ struct ProofContent {
 #[utoipa::path(
     post,
     path = "/sign",
-    request_body = SignRequest,
-    responses((status = 200, body = Value))
+    request_body = Value,
+    responses((status = 200, body = Value), (status = 405, description = "No configuration found"))
 )]
-pub async fn sign_handler(Json(request): Json<SignRequest>) -> Json<Value> {
-    let mut doc = request.document;
-    let keys_to_sign = request.keys_to_sign;
+pub async fn sign_handler(Json(mut doc): Json<Value>) -> Result<Json<Value>, StatusCode> {
+    // Step 0: Extract EntityId, EntityType, and properties to sign
+    let entity_id = doc.get("id").and_then(Value::as_str).unwrap_or_default().to_string();
+    let entity_type = doc.get("type").and_then(Value::as_str).unwrap_or_default().to_string();
+
+    let config = {
+        let store = CONFIG_STORE.read().unwrap();
+        store.get(&entity_type).cloned()
+    };
+
+    let keys_to_sign: Vec<String> = match config {
+        None => return Err(StatusCode::METHOD_NOT_ALLOWED),
+        Some(cfg) if cfg.properties_to_sign.is_empty() => {
+            // Sign all top-level object fields
+            doc.as_object()
+                .unwrap()
+                .iter()
+                .filter(|(_, v)| v.is_object())
+                .map(|(k, _)| k.clone())
+                .collect()
+        }
+        Some(cfg) => cfg.properties_to_sign.clone(),
+    };
 
     // Step 1: Generate signing key (temporary per request; should be stored in prod)
     let mut secret_bytes = [0u8; 32];
@@ -58,44 +79,40 @@ pub async fn sign_handler(Json(request): Json<SignRequest>) -> Json<Value> {
     let signing_key = SigningKey::from_bytes(&secret_key);
     let _verifying_key: VerifyingKey = signing_key.verifying_key();
 
-    let entity_id = doc.get("id").and_then(Value::as_str).unwrap_or_default().to_string();
-    let entity_type = doc.get("type").and_then(Value::as_str).unwrap_or_default().to_string();
-    let verification_method = "https://example.edu/issuers/565049#z6MkwXG2WjeQnN....Hc6SaVWoT";
-
     // Step 2: Loop through keys to sign
     for key in keys_to_sign {
-        // Extract the sub-object to be signed
         if let Some(parent) = doc.as_object_mut() {
             if let Some(target) = parent.get(&key).and_then(Value::as_object) {
-                // Serialize the target field (e.g., "address")
                 let to_sign = serde_json::to_vec(target).unwrap();
-                let signature: Signature = signing_key.sign(&to_sign);
-                let signature_b64 = STANDARD.encode(signature.to_bytes());
-
-                let proof = NgsildProof {
-                    type_field: "Property".to_string(),
-                    entity_id_sealed: entity_id.clone(),
-                    entity_type_sealed: entity_type.clone(),
-                    proof: ProofContent {
-                        type_field: "DataIntegrityProof".to_string(),
-                        created: Utc::now().to_rfc3339(),
-                        verification_method: verification_method.to_string(),
-                        cryptosuite: "eddsa-rdfc-2022".to_string(),
-                        proof_purpose: "assertionMethod".to_string(),
-                        proof_value: signature_b64,
-                    },
-                };
+                let signature = signing_key.sign(&to_sign);
+                let proof = build_proof(&entity_id, &entity_type, &signature);
 
                 if let Some(Value::Object(signed_section)) = parent.get_mut(&key) {
-                    signed_section.insert(
-                        "ngsildproof".to_string(), 
-                        serde_json::to_value(proof).unwrap()
-                    );
+                    signed_section.insert("ngsildproof".into(), proof);
                 }
-
             }
         }
     }
 
-    Json(doc)
+    Ok(Json(doc))
+}
+
+fn build_proof(entity_id: &str, entity_type: &str, signature: &Signature) -> Value {
+    let verification_method = "https://example.edu/issuers/565049#key-1";
+
+    let proof = serde_json::json!({
+        "type": "Property",
+        "entityIdSealed": entity_id,
+        "entityTypeSealed": entity_type,
+        "proof": {
+            "type": "DataIntegrityProof",
+            "created": Utc::now().to_rfc3339(),
+            "verificationMethod": verification_method,
+            "cryptosuite": "eddsa-rdfc-2022",
+            "proofPurpose": "assertionMethod",
+            "proofValue": STANDARD.encode(signature.to_bytes())
+        }
+    });
+
+    proof
 }

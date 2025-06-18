@@ -1,0 +1,3 @@
+- Create a new endpoint to keep configuration details about the subscription rule and properties to sign
+- The system will receive a notification with an entity data, if the configuration is not created return error 405, if the configuration was created but the list of properties is empty -> sign all the properties, otherwise sign only the property specify in the configuration.
+- The generation of public-private key has to be created only once and should be connected to the IdM service
