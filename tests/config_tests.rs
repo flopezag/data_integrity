@@ -1,5 +1,5 @@
 use axum::Json;
-use serde_json::{json, Value};
+use serde_json::{json};
 use jsonld_signer::handlers::{config::config_handler, sign::sign_handler};
 use jsonld_signer::handlers::config::ConfigRequest;
 
