@@ -5,3 +5,4 @@
 - [ ] The generation of public-private key has to be created only once and should be connected to the IdM service
 - [ ] Create the corresponding content of the README.md
 - [ ] Create the dockerfile and docker image corresponding to the component
+- [ ] Correct problems about build.rs

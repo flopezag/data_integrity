@@ -29,7 +29,7 @@ async fn test_sign_and_verify_ok() {
     // Sign the document
     let signed = sign_handler(Json(serde_json::from_value(sign_req).unwrap())).await;
 
-    let signed_value: Value = signed.0.clone();
+    let signed_value: Value = signed.unwrap().0.clone();
     assert!(signed_value["address"]["ngsildproof"].is_object());
 
     // Now verify

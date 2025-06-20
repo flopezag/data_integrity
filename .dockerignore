@@ -1,0 +1,26 @@
+# Ignore target build artifacts
+target/
+doc/
+
+# Git metadata
+.git
+.gitignore
+
+# IDE/editor files
+.vscode/
+.idea/
+*.sw?
+
+# Build output and temp files
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+
+# OpenAPI generated YAML (optional)
+openapi.yaml
+
+# Ignore test outputs
+/tests/output/
+

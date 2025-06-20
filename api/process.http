@@ -1,0 +1,55 @@
+### File variables
+@BROKER = 127.0.0.1:1026/ngsi-ld/v1
+
+
+### 00. Check the status of the Context Broker
+GET http://{{BROKER}}/info/sourceIdentity
+
+### 01. Create a subscription to Context Broker to E1 if the value of A1 is not defined (obviously there is no ngsildproof)
+
+
+### 02. Create an entity E1 with attributes A1 and A2 without no value and no ngsildproof
+POST http://{{BROKER}}/entities
+Content-Type: application/json
+Link: <https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
+
+{
+    "id": "urn:ngsi-ld:EntityType:E1",
+    "type": "EntityType",
+    "A1": {
+        "value": "@none"
+    },
+    "A2": {
+        "value": "@none"
+    }
+}
+
+
+### 03. Check that the Entity data is created in the Context Broker
+GET http://{{BROKER}}/entities/urn:ngsi-ld:EntityType:E1
+
+### 04. Update the value of A1 to "1.4" and A2 to "2.3" in entity E1 (trigger the subscription rule)
+PATCH  http://{{BROKER}}/entities/urn:ngsi-ld:EntityType:E1/attrs
+Content-Type: application/json
+Link: <https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
+
+{
+    "A1": {
+        "value": 1.5
+    },
+    "A2": {
+        "value": 2.7
+    }
+}
+
+### 04. The service take the entity data and sign the A1 and A2 and send back to the Context Broker to update E1
+
+
+### 05. Check that the Context Broker has updated the entity E1 with the ngsildproof for A1 and A2
+
+
+
+
+
+
+

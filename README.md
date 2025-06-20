@@ -1,11 +1,9 @@
-# data_integrity
-Service to manage the Data Integrity as it is defined in ETSI NGSI-LD security group
 # 🔐 NGSI-LD JSON-LD Data Integrity
 
 [![Rust](https://img.shields.io/badge/Rust-🦀-orange?style=flat-square)](https://www.rust-lang.org/)
 [![Axum](https://img.shields.io/badge/Axum-Web--Framework-blue?style=flat-square)](https://docs.rs/axum)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-Generated-green?style=flat-square)](https://swagger.io/specification/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/license-Apache2.0-blue.svg?style=flat-square)](LICENSE)
 
 This project is a Rust-based microservice that signs and verifies ETSI NGSI-LD entity payloads using Ed25519 digital signatures in compliance with ETSI NGSI-LD API `cross-cutting Context Information Management (CIM);
 handling of provenance information in NGSI-LD`.
@@ -181,12 +179,7 @@ Includes tests for:
 
 ## 🔮 Roadmap
 
-* [ ] Persistent Ed25519 keypair support
-* [ ] JSON-LD normalization via RDF dataset canonicalization
-* [ ] DID-based key resolution
-* [ ] MongoDB or file-based config storage
-* [ ] CI + DockerHub builds
-
+Take a look to the file [ROADMAP.md](ROADMAP.md)
 ---
 
 ## 📘 License
