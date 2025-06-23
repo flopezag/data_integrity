@@ -5,8 +5,32 @@
 ### 00. Check the status of the Context Broker
 GET http://{{BROKER}}/info/sourceIdentity
 
-### 01. Create a subscription to Context Broker to E1 if the value of A1 is not defined (obviously there is no ngsildproof)
 
+### 01. Create a subscription to Context Broker to E1 if the value of A1 is not defined (obviously there is no ngsildproof)
+POST http://{{BROKER}}/subscriptions
+Content-Type: application/json
+Link: <https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
+
+
+curl -iX POST
+ 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+-H 'Content-Type: application/ld+json' \
+-H 'NGSILD-Tenant: openiot' \
+--data-raw '{
+  "description": "Notify me when the attribute A1 of the entity E1 is not @none",
+  "type": "Subscription",
+  "entities": [{{"id": "urn:ngsi-ld:Animal:pig003", "type": "EntityType"}],
+  "notification": {
+    "format": "concise",
+    "endpoint": {
+      "uri": "http://tutorial:3000/subscription/low-stock-farm001-ngsild",
+      "accept": "application/json"
+    }
+  },
+   "@context": "http://context/user-context.jsonld"
+}'
+
+watchedAttributes?
 
 ### 02. Create an entity E1 with attributes A1 and A2 without no value and no ngsildproof
 POST http://{{BROKER}}/entities
@@ -27,6 +51,7 @@ Link: <https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld>; rel="http:/
 
 ### 03. Check that the Entity data is created in the Context Broker
 GET http://{{BROKER}}/entities/urn:ngsi-ld:EntityType:E1
+
 
 ### 04. Update the value of A1 to "1.4" and A2 to "2.3" in entity E1 (trigger the subscription rule)
 PATCH  http://{{BROKER}}/entities/urn:ngsi-ld:EntityType:E1/attrs
