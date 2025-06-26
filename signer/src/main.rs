@@ -8,10 +8,8 @@ use utoipa::OpenApi;
 use serde_json::json;
 
 use tracing::{info};
-use tracing_subscriber::fmt;
 
 use flexi_logger::{Logger, Criterion, Naming, Cleanup, FileSpec, Duplicate};
-use tracing_log::LogTracer;
 
 // use utoipa_swagger_ui::SwaggerUi;
 
@@ -56,7 +54,33 @@ async fn fallback_handler() -> impl IntoResponse {
 }
 
 fn setup_logging() {
-    LogTracer::init().expect("Failed to set logger");
+    use flexi_logger::{DeferredNow, Record};
+    use std::io::Write;
+
+    // 💾 Formatter for file logs (includes timestamp, level, and module path)
+    fn file_format(
+        w: &mut dyn Write,
+        now: &mut DeferredNow,
+        record: &Record,
+    ) -> std::io::Result<()> {
+        write!(
+            w,
+            "{} [{}] [{}] {}",
+            now.now().format("%Y-%m-%d %H:%M:%S"),
+            record.level(),
+            record.module_path().unwrap_or("<unnamed>"),
+            &record.args()
+        )
+    }
+
+    // 🖥️ Formatter for stdout logs (clean message only)
+    fn stdout_format(
+        w: &mut dyn Write,
+        _now: &mut DeferredNow,
+        record: &Record,
+    ) -> std::io::Result<()> {
+        write!(w, "{} [{}] {}\n", record.level(), record.module_path().unwrap_or(""), record.args())
+    }
 
     Logger::try_with_str("info")
         .unwrap()
@@ -71,12 +95,9 @@ fn setup_logging() {
             Naming::Numbers,
             Cleanup::KeepLogFiles(5),
         )
-        .duplicate_to_stdout(Duplicate::All) // Also log to stdout
+        .format_for_files(file_format) // 💾 format for file logs
+        .format_for_stdout(stdout_format) // simpler: can be your own too
+        .duplicate_to_stdout(Duplicate::All)
         .start()
         .unwrap();
-
-    // Optional: set up tracing
-    tracing_subscriber::fmt()
-        .with_env_filter("info")
-        .init();
 }
