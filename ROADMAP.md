@@ -6,3 +6,8 @@
 - [ ] Create the corresponding content of the README.md
 - [ ] Create the dockerfile and docker image corresponding to the component
 - [ ] Correct problems about build.rs
+- [ ] Create a Mock Server to test the functionalities of the Orion-LD
+- [ ] Generate process http file with the different requests and response to test the content
+- [ ] Generate Integration tests
+- [ ] Improve Unit tests
+- [ ] Integration with Kubernetes

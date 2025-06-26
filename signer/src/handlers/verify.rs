@@ -5,6 +5,7 @@ use ed25519_dalek::{VerifyingKey, Signature, Verifier};
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use std::collections::HashMap;
 use utoipa::ToSchema;
+use tracing::{info};
 
 #[derive(Deserialize, ToSchema)]
 pub struct VerifyRequest {
@@ -31,6 +32,8 @@ pub struct VerifyResult {
     responses((status = 200, body = VerifyResult))
 )]
 pub async fn verify_handler(Json(payload): Json<VerifyRequest>) -> Json<VerifyResult> {
+    info!("Calling verify_handler method to manage /verify endpoint");
+
     let mut results = HashMap::new();
 
     const PUBLIC_KEY_B64: &str = "REPLACE_WITH_YOUR_PUBLIC_KEY_BASE64";

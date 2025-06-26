@@ -18,6 +18,11 @@ tower-http = { version = "0.6.6", features = ["trace"] }
 utoipa = "5.4.0"
 utoipa-swagger-ui = { version = "8.0.5", features = ["axum"] }
 serde_yaml = "0.9.34"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
+tracing-appender = "0.2"
+flexi_logger = "0.27"
+tracing-log = "0.1"
 
 
 [dev-dependencies]

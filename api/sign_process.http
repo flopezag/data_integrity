@@ -1,0 +1,67 @@
+# Test the sign process sending some requests to the service
+@SERVICE_IP = 127.0.0.1:3000
+
+
+### 00. Check that the service is running
+GET http://{{SERVICE_IP}}/info
+
+
+### 01. Config the service
+POST http://{{SERVICE_IP}}/config
+Content-Type: application/json
+
+{
+    "entity_type": "EntityType",
+    "properties_to_sign": ["A1"]
+}
+
+
+### 02. Send some notification to the service
+POST  http://{{SERVICE_IP}}/sign
+Content-type: application/json
+
+{
+    "id": "urn:ngsi-ld:Notification:b99f41be-5023-11f0-b732-e6ff9c082ab3",
+    "type": "Notification",
+    "notifiedAt": "2025-06-23T11:18:01.677Z",
+    "subscriptionId": "urn:ngsi-ld:Subscription:abf76686-5023-11f0-905d-e6ff9c082ab3",
+    "data": [
+        {
+            "id": "urn:ngsi-ld:EntityType:E1",
+            "type": "EntityType",
+            "A1": {
+                "type": "Property",
+                "value": "@none"
+            },
+            "A2": {
+                "type": "Property",
+                "value": "@none"
+            }
+        }
+    ]
+}
+
+
+### 02.a Send some notification to the service
+POST  http://{{SERVICE_IP}}/sign
+Content-type: application/json
+
+{
+    "id": "urn:ngsi-ld:Notification:b99f41be-5023-11f0-b732-e6ff9c082ab3",
+    "type": "Notification",
+    "notifiedAt": "2025-06-23T11:18:01.677Z",
+    "subscriptionId": "urn:ngsi-ld:Subscription:abf76686-5023-11f0-905d-e6ff9c082ab3",
+    "data": []
+}
+
+
+### 02.b Send some notification to the service
+POST  http://{{SERVICE_IP}}/sign
+Content-type: application/json
+
+{
+    "id": "urn:ngsi-ld:Notification:b99f41be-5023-11f0-b732-e6ff9c082ab3",
+    "type": "Notification",
+    "notifiedAt": "2025-06-23T11:18:01.677Z",
+    "subscriptionId": "urn:ngsi-ld:Subscription:abf76686-5023-11f0-905d-e6ff9c082ab3"
+}

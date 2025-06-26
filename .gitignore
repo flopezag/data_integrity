@@ -22,3 +22,6 @@ target/
 
 # Rust Analyzer
 doc/
+
+# logs
+logs/

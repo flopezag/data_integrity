@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::sync::RwLock;
 use once_cell::sync::Lazy;
 use utoipa::ToSchema;
+use tracing::{info};
 
 #[derive(Deserialize, ToSchema)]
 pub struct ConfigRequest {
@@ -28,6 +29,8 @@ pub static CONFIG_STORE: Lazy<RwLock<HashMap<String, ConfigEntry>>> =
     responses((status = 200, description = "Config stored"))
 )]
 pub async fn config_handler(Json(config): Json<ConfigRequest>) -> StatusCode {
+    info!("Calling config_handler method to manage /config endpoint");
+
     let mut store = CONFIG_STORE.write().unwrap();
     store.insert(
         config.entity_type.clone(),
