@@ -16,7 +16,7 @@ axum = "0.8.4"
 tokio = { version = "1.45.1", features = ["full"] }
 tower-http = { version = "0.6.6", features = ["trace"] }
 utoipa = "5.4.0"
-utoipa-swagger-ui = { version = "8.0.5", features = ["axum"] }
+utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
 serde_yaml = "0.9.34"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
