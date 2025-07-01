@@ -22,7 +22,7 @@ tracing = "0.1.41"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
 tracing-appender = "0.2"
 flexi_logger = "0.31.1"
-tracing-log = "0.1"
+tracing-log = "0.2"
 
 
 [dev-dependencies]
