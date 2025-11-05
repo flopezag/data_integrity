@@ -12,7 +12,7 @@ COPY doc ./doc
 COPY openapi.rs ./src/
 
 # Build in release mode
-RUN cargo build --release
+RUN cargo build -p signer --release
 
 # -------- Stage 2: Runtime --------
 FROM debian:bookworm-slim

@@ -60,17 +60,17 @@ Link: <https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld>; rel="http:/
 GET http://{{BROKER}}/entities/urn:ngsi-ld:EntityType:E1
 
 
-### 05. Update the value of A1 to "1.4" and A2 to "2.3" in entity E1 (trigger the subscription rule)
+### 05. Update the value of A1 and A2 in entity E1 (trigger the subscription rule)
 PATCH  http://{{BROKER}}/entities/urn:ngsi-ld:EntityType:E1/attrs
 Content-Type: application/json
 Link: <https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
 
 {
     "A1": {
-        "value": 1.5
+        "value": 1.9
     },
     "A2": {
-        "value": 2.7
+        "value": 2.9
     }
 }
 

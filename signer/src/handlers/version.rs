@@ -23,7 +23,6 @@ pub struct ServiceInfo {
         (status = 200, description = "Service info", body = ServiceInfo)
     )
 )]
-
 pub async fn service_info() -> Json<ServiceInfo> {
     info!("Calling service_info handler method to manage /info endpoint");
 

@@ -20,6 +20,12 @@ handling of provenance information in NGSI-LD`.
 - Fallback for undefined endpoints (`405`, structured error)
 - 🚀 Docker-ready
 
+ 3577  cargo run -p mock_server
+ 3578  cargo run -p sign
+ 3579  cargo run -p signer
+
+ RUST_LOG=info cargo run -p signer
+
 ---
 
 ## 📘 Project Structure
@@ -81,8 +87,28 @@ Example request:
   "location": { "type": "GeoProperty", "value": { "type": "Point", "coordinates": [10, 10] } },
   "@context": "https://uri.etsi.org/ngsi-ld/primer/store-context.jsonld"
 }
-```
 
+Received JSON payload:
+{
+  "id": "urn:ngsi-ld:Notification:b99f41be-5023-11f0-b732-e6ff9c082ab3",
+  "type": "Notification",
+  "notifiedAt": "2025-06-23T11:18:01.677Z",
+  "subscriptionId": "urn:ngsi-ld:Subscription:abf76686-5023-11f0-905d-e6ff9c082ab3",
+  "data": [
+    {
+      "id": "urn:ngsi-ld:EntityType:E1",
+      "type": "EntityType",
+      "A1": {
+        "type": "Property",
+        "value": "@none"
+      },
+      "A2": {
+        "type": "Property",
+        "value": "@none"
+      }
+    }
+  ]
+}
 ---
 
 ### `POST /verify`
